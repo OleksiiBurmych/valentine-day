@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Будь моєю Валентинкою 💘</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+      background-size: 400% 400%;
+      animation: bgMove 12s ease infinite;
+      font-family: "Poppins", sans-serif;
+      overflow: hidden;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Card */
+    .card {
+      width: min(92%, 420px);
+      padding: 40px 30px 45px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(18px);
+      border-radius: 28px;
+      text-align: center;
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.25),
+        inset 0 0 0 1px rgba(255,255,255,0.4);
+      position: relative;
+      animation: cardIn 1.1s ease;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Glow ring */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 30px;
+      background: linear-gradient(120deg, #ff4d6d, #ff9a9e, #fbc2eb);
+      z-index: -1;
+      filter: blur(20px);
+      opacity: 0.7;
+    }
+
+    .emoji {
+      font-size: 68px;
+      margin-bottom: 12px;
+      animation: heartbeat 1.8s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      25% { transform: scale(1.08); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.12); }
+    }
+
+    h2 {
+      font-family: "Playfair Display", serif;
+      font-size: 28px;
+      color: #4a1c2f;
+      margin-bottom: 30px;
+      line-height: 1.35;
+    }
+
+    .buttons {
+      position: relative;
+      height: 78px;
+    }
+
+    button {
+      position: absolute;
+      padding: 16px 44px;
+      border-radius: 44px;
+      border: none;
+      font-size: 17px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    /* Keep the "No" label on one line and avoid extra whitespace */
+    #no {
+      white-space: nowrap;
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+
+    button:active {
+      transform: scale(0.94);
+    }
+
+    #yes {
+      left: 12%;
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: #fff;
+      box-shadow: 0 15px 35px rgba(255,77,109,0.55);
+    }
+
+    #yes:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(255,77,109,0.7);
+    }
+
+    #no {
+      left: 55%;
+      background: rgba(255,255,255,0.9);
+      color: #777;
+      z-index: 2147483005;
+    }
+
+    #no:disabled {
+      cursor: not-allowed;
+      opacity: 0.9;
+      box-shadow: none;
+      color: #9a9a9a;
+    }
+
+    /* Mobile jump animation for No button */
+    #no.jump {
+      animation: jump 600ms cubic-bezier(.2,.9,.3,1);
+    }
+
+    @keyframes jump {
+      0% { transform: translateY(0); }
+      40% { transform: translateY(-18px); }
+      100% { transform: translateY(0); }
+    }
+
+    /* Yes button uses CSS variable for persistent scale */
+    #yes {
+      --yes-scale: 1;
+      transform: scale(var(--yes-scale));
+      transition: transform 220ms cubic-bezier(.2,.9,.3,1);
+    }
+
+    #yes:hover {
+      transform: translateY(-3px) scale(var(--yes-scale));
+    }
+
+    .hint {
+      margin-top: 28px;
+      font-size: 13px;
+      color: #6b6b6b;
+      font-style: italic;
+    }
+
+    /* Floating depth hearts */
+    .heart {
+      position: absolute;
+      bottom: -20px;
+      animation: floatUp linear forwards;
+      pointer-events: none;
+      filter: blur(0.3px);
+    }
+
+    /* Snowflakes */
+
+    .snowflake {
+      position: absolute;
+      bottom: -20px;
+      color: #fbfeff; /* near-white with a subtle blue tint */
+      text-shadow: 0 2px 8px rgba(160,210,255,0.45);
+      pointer-events: none;
+      filter: blur(0.1px);
+      mix-blend-mode: screen;
+    }
+
+    @keyframes driftUp {
+      from {
+        bottom: -20px;
+        opacity: 1;
+      }
+      to {
+        bottom: 130vh;
+        opacity: 0;
+      }
+    }
+
+    @keyframes sway {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(18px); }
+      100% { transform: translateX(0); }
+    }
+
+    @keyframes floatUp {
+      from {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-120vh) scale(1.8);
+        opacity: 0;
+      }
+    }
+
+    /* Movement in four directions (used by JS) */
+    @keyframes moveUp {
+      from { bottom: -30px; opacity: 1; }
+      to { bottom: 130vh; opacity: 0; }
+    }
+    @keyframes moveDown {
+      from { top: -30px; opacity: 1; }
+      to { top: 130vh; opacity: 0; }
+    }
+    @keyframes moveRight {
+      from { left: -60px; opacity: 1; }
+      to { left: 130vw; opacity: 0; }
+    }
+    @keyframes moveLeft {
+      from { left: 100vw; opacity: 1; }
+      to { left: -130vw; opacity: 0; }
+    }
+
+    @keyframes swayY {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(14px); }
+      100% { transform: translateY(0); }
+    }
+
+    /* Shared appearance for bottom controls (apply to all viewports) */
+    #dirToggle, #densityToggle, #typeToggle {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: transparent;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      z-index: 2147483000;
+      transition: transform 220ms ease, box-shadow 220ms ease;
+      border: 0;
+      padding: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      touch-action: manipulation;
+    }
+    #dirToggle:active, #densityToggle:active { transform: scale(0.96); }
+    .density-dots { display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .density-dot { font-size:28px; opacity:0.22; transition: opacity 220ms, transform 220ms; transform: translateY(8px); line-height:1; }
+    .density-dot.active { opacity:1; transform: translateY(0); }
+    #dirArrow {
+      width: 54px;
+      height: 54px;
+      transition: transform 300ms cubic-bezier(.2,.9,.3,1);
+      transform-origin: 50% 50%;
+      color: #ff2d5c;
+      display: block;
+      filter: drop-shadow(0 6px 10px rgba(255,45,92,0.12));
+    }
+    #typeToggle .typeIcon { font-size: 34px; line-height:1; }
+
+    /* Container for bottom controls: match card width and distribute buttons evenly */
+    #bottomControls {
+      width: min(92%, 420px);
+      margin: 18px auto 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      pointer-events: auto;
+    }
+
+    /* Ensure buttons inside the container participate in normal flow (override any absolute inline styles) */
+    #bottomControls > button {
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      margin: 0;
+      flex: 0 0 auto;
+    }
+
+    @media (min-width: 481px) {
+      /* On desktop, bottomControls remains same width as card and centered; buttons are distributed by flex */
+      #typeToggle:active { transform: translateX(-50%) scale(0.96); }
+    }
+    /* Mobile: ensure visible and comfortably tappable */
+    @media (max-width: 480px) {
+      /* mobile: make all three controls slightly larger and tappable */
+      #dirToggle, #densityToggle, #typeToggle { width:95px; height:95px; }
+      #dirToggle { right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
+      #densityToggle { left:12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
+      #typeToggle { bottom: calc(12px + env(safe-area-inset-bottom)); }
+      #dirArrow { width: 46px; height: 46px; }
+      .density-dot{font-size:16px;}
+      #typeToggle .typeIcon{font-size:28px;}
+    }
+
+    /* Non-modal popup */
+    .popup {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.98);
+      padding: 14px 18px;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      font-size: 16px;
+      color: #2b2b2b;
+      z-index: 9999;
+      min-width: 220px;
+      max-width: calc(100% - 36px);
+      animation: popupIn 300ms cubic-bezier(.2,.9,.3,1) both;
+    }
+
+    /* Burst snowflake particles (for confetti-like effect) */
+    .burst-snow {
+      position: fixed;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+      transition: transform 1100ms cubic-bezier(.2,.8,.2,1), opacity 1100ms ease-out;
+      z-index: 9998;
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.12));
+    }
+
+    .popup .close {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      cursor: pointer;
+      color: #888;
+      font-weight: 600;
+    }
+
+    @keyframes popupIn {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      h2 { font-size: 22px; }
+      .emoji { font-size: 54px; }
+      .card { padding: 28px 18px 30px; }
+      .buttons { height: 86px; }
+      /* mobile padding requested */
+      button { padding: 15px 30px; font-size: 15px; border-radius: 36px; }
+      #yes { left: 6%; }
+      #no { left: 56%; }
+      .popup { left: 50%; top: 50%; transform: translate(-50%, -50%); min-width: 200px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <div class="emoji">❄️</div>
+    <h2>Сніжинко,<br>будеш моєю Валентинкою?</h2>
+
+    <div class="buttons">
+      <button id="yes">Так 💖</button>
+      <button id="no" disabled>Ні 😌</button>
+    </div>
+
+    <div class="hint">Цьомаю тебе у обидві щічки багато разів ✨</div>
+  </div>
+
+  <!-- Sounds -->
+  <audio id="hoverSound" src="https://assets.mixkit.co/sfx/preview/mixkit-cartoon-voice-laugh-343.mp3"></audio>
+  <audio id="yesSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+
+  <script>
+    const noBtn = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
+    const card = document.querySelector(".card");
+    const hoverSound = document.getElementById("hoverSound");
+    const yesSound = document.getElementById("yesSound");
+    // persistent scale factor for Yes button
+    let yesScale = 1;
+
+    // Direction control: order clockwise -> right, down, left, up
+    const directions = ['right','down','left','up'];
+    let dirIndex = 3; // start at 'up' to preserve original behaviour
+
+    // create bottom controls container (will be placed after .card in DOM)
+    const bottomControls = document.createElement('div');
+    bottomControls.id = 'bottomControls';
+    // place container right after the card so mobile CSS centers it below the card
+    card.parentNode.insertBefore(bottomControls, card.nextSibling);
+
+    // create fixed direction toggle button (will be appended into bottomControls)
+    const dirToggleBtn = document.createElement('button');
+    dirToggleBtn.id = 'dirToggle';
+    dirToggleBtn.title = 'Змінити напрям руху';
+    dirToggleBtn.innerHTML = `<svg id="dirArrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6"></path><path d="M5 13l7-7 7 7"></path></svg>`;
+    bottomControls.appendChild(dirToggleBtn);
+    const dirArrow = document.getElementById('dirArrow');
+    function updateDirUI(){
+      const deg = (dirIndex + 1) * 90; // maps 0->90(right),1->180(down),2->270(left),3->360(up)
+      dirArrow.style.transform = `rotate(${deg}deg)`;
+      dirToggleBtn.setAttribute('aria-label', 'Напрям: ' + directions[dirIndex]);
+    }
+    dirToggleBtn.addEventListener('click', () => {
+      dirIndex = (dirIndex + 1) % 4;
+      updateDirUI();
+    });
+    updateDirUI();
+
+    // ----- Density toggle (left bottom) -----
+    const densityModes = ['мало','більше','дуже багато'];
+    let densityIndex = 1; // start at 'більше' (medium)
+
+    const densityBtn = document.createElement('button');
+    densityBtn.id = 'densityToggle';
+    densityBtn.title = 'Режим кількості: ' + densityModes[densityIndex];
+    densityBtn.innerHTML = `<div id="densityIcon" style="font-size:22px;line-height:1">❣️</div>`;
+    bottomControls.appendChild(densityBtn);
+
+    function updateDensityUI(){
+      // render three vertical dots (small hearts) and mark active count from bottom → up
+      const hearts = ['<span class="density-dot">❤</span>','<span class="density-dot">❤</span>','<span class="density-dot">❤</span>'];
+      densityBtn.innerHTML = `<div class="density-dots">${hearts.join('')}</div>`;
+      const dots = densityBtn.querySelectorAll('.density-dot');
+      // active dots should light from bottom up: for densityIndex=0 -> only bottom; 1 -> bottom+middle; 2 -> all
+      const threshold = dots.length - 1 - densityIndex;
+      dots.forEach((d, i) => { d.classList.toggle('active', i >= threshold); d.style.color = '#ff4d6d'; });
+      densityBtn.title = 'Режим кількості: ' + densityModes[densityIndex];
+      densityBtn.setAttribute('aria-label', densityModes[densityIndex]);
+      densityBtn.style.opacity = 0.98;
+      densityBtn.style.transform = 'scale(1.03)';
+      setTimeout(() => densityBtn.style.transform = '', 220);
+    }
+
+    densityBtn.addEventListener('click', () => {
+      densityIndex = (densityIndex + 1) % densityModes.length;
+      updateDensityUI();
+      applyDensityMode();
+    });
+    updateDensityUI();
+
+    // ----- Type toggle (center bottom): 'snow', 'hearts', 'both' -----
+    const typeModes = ['snow','hearts','both'];
+    let typeIndex = 2; // default: both
+
+    const typeBtn = document.createElement('button');
+    typeBtn.id = 'typeToggle';
+    typeBtn.title = 'Тип частинок: обидва';
+    typeBtn.innerHTML = `<div class="typeIcon">❄️❤️</div>`;
+    bottomControls.appendChild(typeBtn);
+
+    // enforce desired order inside container: density, type, dir
+    bottomControls.appendChild(densityBtn);
+    bottomControls.appendChild(typeBtn);
+    bottomControls.appendChild(dirToggleBtn);
+
+    function updateTypeUI(){
+      const iconEl = typeBtn.querySelector('.typeIcon');
+      if (!iconEl) return;
+      if (typeIndex === 0) iconEl.textContent = '❄️';
+      else if (typeIndex === 1) iconEl.textContent = '❤️';
+      else iconEl.textContent = '❄️❤️';
+      typeBtn.title = 'Тип частинок: ' + (typeIndex === 0 ? 'тільки сніжинки' : (typeIndex === 1 ? 'тільки сердечка' : 'сердечка і сніжинки'));
+    }
+
+    typeBtn.addEventListener('click', () => {
+      typeIndex = (typeIndex + 1) % typeModes.length;
+      updateTypeUI();
+      applyDensityMode();
+    });
+    updateTypeUI();
+
+    // bottom controls layout is handled with CSS (#bottomControls flexbox)
+
+    // "No" button is disabled / non-clickable by design
+
+    yesBtn.addEventListener("click", () => {
+      yesSound.play();
+
+      confetti({
+        particleCount: 260,
+        spread: 120,
+        origin: { y: 0.65 }
+      });
+
+      // permanently grow Yes button by increasing CSS variable scale
+      yesScale = +(yesScale * 1.08).toFixed(3);
+      yesBtn.style.setProperty('--yes-scale', yesScale);
+
+      // also create a burst of snowflake particles around the Yes button
+      const rect = yesBtn.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height / 2;
+      burstSnowflakes(18, originX, originY);
+
+      setTimeout(() => {
+        showPopup("Чудово 💕. Я теж тебе люблю, моя Ліскулько!");
+      }, 500);
+    });
+
+    function burstSnowflakes(count = 12, originX = window.innerWidth/2, originY = window.innerHeight/2) {
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'burst-snow';
+        el.textContent = '❄️';
+        const size = Math.floor(Math.random() * 14) + 12; // 12-26px
+        el.style.fontSize = size + 'px';
+        // place at origin
+        el.style.left = (originX - size/2) + 'px';
+        el.style.top = (originY - size/2) + 'px';
+        document.body.appendChild(el);
+
+        // random direction and distance
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 80 + Math.random() * 260; // px
+        const dx = Math.cos(angle) * distance;
+        const dy = Math.sin(angle) * distance - Math.random() * 80; // bias upward
+        // slight rotation
+        const rot = (Math.random() * 60 - 30).toFixed(2);
+
+        // trigger transition
+        requestAnimationFrame(() => {
+          el.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(${(Math.random()*0.6+0.8).toFixed(2)})`;
+          el.style.opacity = '0';
+        });
+
+        setTimeout(() => { if (el.parentElement) el.parentElement.removeChild(el); }, 1400 + Math.random() * 600);
+      }
+    }
+
+    function showPopup(message, timeout = 0) {
+      // if popup exists, update text instead of creating a new one
+      let popup = document.querySelector('.popup');
+      if (!popup) {
+        popup = document.createElement('div');
+        popup.className = 'popup';
+        popup.innerHTML = `<div class="close">✕</div><div class="msg">${message}</div>`;
+        document.body.appendChild(popup);
+
+        popup.querySelector('.close').addEventListener('click', () => {
+          if (popup.parentElement) popup.parentElement.removeChild(popup);
+        });
+      } else {
+        const msg = popup.querySelector('.msg');
+        if (msg) msg.textContent = message;
+      }
+
+      // only auto-remove if timeout provided (>0)
+      if (timeout > 0) {
+        setTimeout(() => { if (popup.parentElement) popup.parentElement.removeChild(popup); }, timeout);
+      }
+    }
+
+    // Behavior: make the "No" button run away (desktop hover and mobile tap)
+    document.addEventListener('DOMContentLoaded', () => {
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) || window.innerWidth <= 480;
+
+      // phrases to cycle through (including 'Ні')
+      const phrases = [
+        'Ні',
+        'Не сьогодні:)',
+        'Ну та так)',
+        'Подумай ще.',
+        'Сьогодні ця кнопка не приймає відповіді ні.',
+        'Буде тортик, подумай ще'
+      ];
+      let phraseIdx = 0;
+
+      // enable the button so it can receive events on both desktop and touch
+      noBtn.removeAttribute('disabled');
+
+      function moveNoButtonAndCycleText() {
+        try { hoverSound.currentTime = 0; hoverSound.play(); } catch (err) {}
+
+        // set next phrase (cycle)
+        phraseIdx = (phraseIdx + 1) % phrases.length;
+        noBtn.textContent = phrases[phraseIdx];
+
+        // compute random position in a larger area (viewport constrained), then convert to parent coords
+        const cardRect = card.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect();
+        const parentRect = noBtn.parentElement.getBoundingClientRect();
+
+        // allow movement across most of the viewport width and a larger vertical range
+        const minViewportX = 8;
+        const maxViewportX = Math.max(window.innerWidth - btnRect.width - 8, minViewportX + 10);
+        const minViewportY = Math.max(8, cardRect.top - 140);
+        const maxViewportY = Math.min(window.innerHeight - btnRect.height - 8, cardRect.bottom + 140);
+
+        const viewportX = minViewportX + Math.random() * (maxViewportX - minViewportX);
+        const viewportY = minViewportY + Math.random() * Math.max(10, (maxViewportY - minViewportY));
+
+        const newLeft = viewportX - parentRect.left;
+        const newTop = viewportY - parentRect.top;
+
+        noBtn.style.left = Math.max(6, newLeft) + 'px';
+        noBtn.style.top = Math.max(0, newTop) + 'px';
+
+        // On desktop keep small jump feedback; on touch devices skip jump to mimic desktop movement
+        if (!isTouch) {
+          noBtn.classList.add('jump');
+          setTimeout(() => noBtn.classList.remove('jump'), 700);
+        }
+
+        // briefly scale Yes button for playful feedback without resetting persistent scale
+        const prevScale = yesScale;
+        yesBtn.style.setProperty('--yes-scale', +(prevScale * 1.14).toFixed(3));
+        setTimeout(() => yesBtn.style.setProperty('--yes-scale', prevScale), 500);
+      }
+
+      if (isTouch) {
+        noBtn.addEventListener('click', (e) => {
+          moveNoButtonAndCycleText();
+        });
+      } else {
+        noBtn.addEventListener('mouseenter', (e) => {
+          moveNoButtonAndCycleText();
+        });
+      }
+      // center initial positions for Yes/No inside the .buttons container
+      function centerButtons() {
+        const parent = document.querySelector('.buttons');
+        const pRect = parent.getBoundingClientRect();
+        const yesRect = yesBtn.getBoundingClientRect();
+        const noRect = noBtn.getBoundingClientRect();
+        const gap = Math.max(16, Math.min(32, (pRect.width * 0.06)) );
+
+        const totalWidth = yesRect.width + noRect.width + gap;
+        const startLeft = Math.max(6, (pRect.width - totalWidth) / 2);
+
+        yesBtn.style.left = startLeft + 'px';
+        noBtn.style.left = (startLeft + yesRect.width + gap) + 'px';
+
+        // vertical center inside buttons container
+        const topPosYes = Math.max(0, (pRect.height - yesRect.height) / 2);
+        const topPosNo = Math.max(0, (pRect.height - noRect.height) / 2);
+        yesBtn.style.top = topPosYes + 'px';
+        noBtn.style.top = topPosNo + 'px';
+      }
+
+      // center on load and on resize
+      setTimeout(centerButtons, 50);
+      window.addEventListener('resize', () => setTimeout(centerButtons, 80));
+    });
+
+    let heartIntervalId = null;
+    let snowIntervalId = null;
+
+    // density spawn configuration: [heartPerTick, snowPerTick]
+    // spawn counts per tick for [hearts, snow] for modes: мало, більше, дуже багато
+    const densitySpawn = [ [2,2], [2,3], [3,5] ];
+    let currentSpawnHeart = densitySpawn[1][0];
+    let currentSpawnSnow = densitySpawn[1][1];
+
+    function applyDensityMode() {
+      // clear existing intervals
+      if (heartIntervalId) { clearInterval(heartIntervalId); heartIntervalId = null; }
+      if (snowIntervalId) { clearInterval(snowIntervalId); snowIntervalId = null; }
+
+      // density timings by mode
+      let heartMs, snowMs;
+      if (densityIndex === 0) { // мало
+        heartMs = 600; snowMs = 900;
+      } else if (densityIndex === 2) { // дуже багато
+        heartMs = 120; snowMs = 160;
+      } else { // більше (medium)
+        heartMs = 320; snowMs = 480;
+      }
+
+      // base spawn values from table for current density
+      const baseHeart = (densitySpawn[densityIndex] && densitySpawn[densityIndex][0]) || 0;
+      const baseSnow = (densitySpawn[densityIndex] && densitySpawn[densityIndex][1]) || 0;
+
+      // apply a slight boost on the medium density so it feels a bit livelier
+      const mediumBoost = (densityIndex === 1) ? 1.12 : 1.0;
+      // small reduction for the 'дуже багато' mode (reduce by ~8%) per request
+      const veryManyReduction = 0.92;
+      const reductionFactor = (densityIndex === 2) ? veryManyReduction : 1.0;
+
+      // adjusted base counts used for the 'both' mode display
+      const baseHeartAdj = Math.max(0, Math.round(baseHeart * mediumBoost * reductionFactor));
+      const baseSnowAdj = Math.max(0, Math.round(baseSnow * mediumBoost * reductionFactor));
+
+      // Compute the current total element rate (elements per millisecond) for the mixed mode
+      // rate = count / interval (per ms)
+      const ratePerMsHeart = baseHeartAdj / Math.max(1, heartMs);
+      const ratePerMsSnow = baseSnowAdj / Math.max(1, snowMs);
+      const totalRatePerMs = ratePerMsHeart + ratePerMsSnow;
+
+      // When only one type is active, compute spawn count per tick so that the overall elements/sec
+      // stays equal to the mixed-mode rate. For the mixed ('both') mode we use the adjusted bases.
+      if (typeIndex === 1) { // hearts only
+        // desired hearts per tick = totalRatePerMs * heartMs
+        currentSpawnHeart = Math.max(1, Math.round(totalRatePerMs * heartMs));
+        currentSpawnSnow = 0;
+        heartIntervalId = setInterval(createHeart, heartMs);
+      } else if (typeIndex === 0) { // snow only
+        currentSpawnSnow = Math.max(1, Math.round(totalRatePerMs * snowMs));
+        currentSpawnHeart = 0;
+        snowIntervalId = setInterval(createSnowflake, snowMs);
+      } else { // both
+        currentSpawnHeart = baseHeartAdj || 0;
+        currentSpawnSnow = baseSnowAdj || 0;
+        // start both intervals
+        heartIntervalId = setInterval(createHeart, heartMs);
+        snowIntervalId = setInterval(createSnowflake, snowMs);
+      }
+    }
+
+    function createHeart() {
+      const dir = directions[dirIndex];
+      const count = Math.max(1, currentSpawnHeart || (densitySpawn[densityIndex] && densitySpawn[densityIndex][0]) || 1);
+      for (let i = 0; i < count; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = Math.random() > 0.5 ? "❤️" : "💗";
+        const size = Math.random() * 26 + 16; // slightly larger than before
+        heart.style.fontSize = size + "px";
+        const dur = (Math.random() * 3 + 4).toFixed(2);
+        heart.style.opacity = Math.random() * 0.5 + 0.45;
+
+        if (dir === 'up') {
+          const left = Math.min(98, Math.random() * 100 + (i - count/2) * 3);
+          heart.style.left = left + "vw";
+          heart.style.bottom = "-6px";
+          heart.style.animation = `moveUp ${dur}s linear forwards`;
+        } else if (dir === 'down') {
+          const left = Math.min(98, Math.random() * 100 + (i - count/2) * 3);
+          heart.style.left = left + "vw";
+          heart.style.top = "-6px";
+          heart.style.animation = `moveDown ${dur}s linear forwards`;
+        } else if (dir === 'right') {
+          const top = Math.min(98, Math.random() * 100 + (i - count/2) * 3);
+          heart.style.top = top + "vh";
+          heart.style.left = "-8px";
+          heart.style.animation = `moveRight ${dur}s linear forwards`;
+        } else { // left
+          const top = Math.min(98, Math.random() * 100 + (i - count/2) * 3);
+          heart.style.top = top + "vh";
+          heart.style.left = "100vw";
+          heart.style.animation = `moveLeft ${dur}s linear forwards`;
+        }
+
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), (parseFloat(dur) * 1000) + 1000 + i*80);
+      }
+    }
+
+    function createSnowflake() {
+      const dir = directions[dirIndex];
+      const count = Math.max(1, currentSpawnSnow || (densitySpawn[densityIndex] && densitySpawn[densityIndex][1]) || 1);
+      for (let i = 0; i < count; i++) {
+        const snow = document.createElement("div");
+        snow.className = "snowflake";
+        snow.textContent = '❄️';
+        const size = Math.random() * 26 + 14; // a bit larger
+        snow.style.fontSize = size + "px";
+        const dur = (Math.random() * 6 + 6).toFixed(2); // 6s - 12s
+        const swayDur = (Math.random() * 2 + 2).toFixed(2); // 2s - 4s
+        snow.style.opacity = Math.random() * 0.6 + 0.35;
+
+        if (dir === 'up') {
+          const left = Math.min(98, Math.random() * 100 + (i - count/2) * 2);
+          snow.style.left = left + "vw";
+          snow.style.bottom = "-6px";
+          snow.style.animation = `moveUp ${dur}s linear forwards, sway ${swayDur}s ease-in-out infinite`;
+        } else if (dir === 'down') {
+          const left = Math.min(98, Math.random() * 100 + (i - count/2) * 2);
+          snow.style.left = left + "vw";
+          snow.style.top = "-6px";
+          snow.style.animation = `moveDown ${dur}s linear forwards, sway ${swayDur}s ease-in-out infinite`;
+        } else if (dir === 'right') {
+          const top = Math.min(98, Math.random() * 100 + (i - count/2) * 2);
+          snow.style.top = top + "vh";
+          snow.style.left = "-8px";
+          snow.style.animation = `moveRight ${dur}s linear forwards, swayY ${swayDur}s ease-in-out infinite`;
+        } else { // left
+          const top = Math.min(98, Math.random() * 100 + (i - count/2) * 2);
+          snow.style.top = top + "vh";
+          snow.style.left = "100vw";
+          snow.style.animation = `moveLeft ${dur}s linear forwards, swayY ${swayDur}s ease-in-out infinite`;
+        }
+
+        document.body.appendChild(snow);
+        setTimeout(() => snow.remove(), (parseFloat(dur) * 1000) + 1100 + i*60);
+      }
+    }
+
+    // start intervals according to initial density
+    applyDensityMode();
+  </script>
+
+</body>
+</html>
